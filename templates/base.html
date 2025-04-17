@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bike Buy and Sell</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <!-- Added modern CSS stylesheet -->
+  <link rel="stylesheet" href="{% static 'css/modern.css' %}">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #EFF8F8; /* updated: was #f9f9f9 */
+      color: #333;
+      transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+    }
+
+    .navbar {
+      background-color: #3E7FE9; /* updated: was #007bff */
+    }
+
+    .navbar-brand, .nav-link {
+      color: #fff !important;
+    }
+
+    .navbar-brand:hover, .nav-link:hover {
+      color: #d1ecf1 !important;
+    }
+
+    .btn-primary {
+      background-color: #125BFB; /* updated */
+      border-color: #125BFB;
+    }
+
+    .btn-primary:hover {
+      background-color: #1953D6; /* updated */
+      border-color: #1953D6;
+    }
+
+    footer {
+      background-color: #1953D6; /* updated */
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    footer a {
+      color: #3E7FE9; /* updated */
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .dark-mode {
+      background-color: #121212;
+      color: #fff;
+    }
+
+    .dark-mode .navbar {
+      background-color: #333;
+    }
+
+    .dark-mode .card {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+
+    .dark-mode .btn-primary {
+      background-color: #444;
+      border-color: #222;
+    }
+
+    .dark-mode footer {
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+
+    .carousel-caption {
+        background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .carousel-caption h5 {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .carousel-caption p {
+        font-size: 1.2rem;
+    }
+
+    .carousel-caption .btn {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+
+    .banner-image {
+        height: 400px; /* Set a standard height for the banner */
+        object-fit: cover; /* Ensure the image scales proportionally */
+    }
+
+    @media (max-width: 768px) {
+        .banner-image {
+            height: 250px; /* Adjust height for smaller screens */
+        }
+    }
+
+    /* New chat button styles */
+    .chat-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #125BFB;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      text-decoration: none;
+      z-index: 1000;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .chat-button:hover {
+      background-color: #1953D6;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'index' %}">Bike Source</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'index' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'buy_list' %}active{% endif %}" href="{% url 'buy_list' %}">Buy</a>
+        </li>
+        {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'sell' %}active{% endif %}" href="{% url 'sell' %}">Sell</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'registration' %}active{% endif %}" href="{% url 'registration' %}">Sign Up</a>
+          </li>
+        {% endif %}
+        <li class="nav-item">
+          <!-- Updated dark mode button with icon -->
+          <button class="btn btn-outline-light ms-3" onclick="toggleDarkMode()">
+              <span id="darkModeIcon">🌙</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  {% block content %}
+  {% endblock %}
+</div>
+
+<!-- New floating chat button (visible on every page) -->
+<a href="{% url 'chat_support' %}" class="chat-button">💬</a>
+
+{% if request.resolver_match.url_name == 'index' %}
+<footer>
+  <p>&copy; 2025 Bike Source. All rights reserved. | <a href="{% url 'contact' %}">Contact Us</a></p>
+</footer>
+{% endif %}
+
+<script>
+  // Function to toggle dark mode with icon change
+  function toggleDarkMode() {
+    const body = document.body;
+    const icon = document.getElementById('darkModeIcon');
+    body.classList.toggle('dark-mode');
+    if (body.classList.contains('dark-mode')) {
+      icon.textContent = "☀️";
+      localStorage.setItem('theme', 'dark');
+    } else {
+      icon.textContent = "🌙";
+      localStorage.setItem('theme', 'light');
+    }
+  }
+
+  // Apply the saved theme on page load and update icon
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    const icon = document.getElementById('darkModeIcon');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      icon.textContent = "☀️";
+    } else {
+      icon.textContent = "🌙";
+    }
+  });
+</script>
+
+</body>
+</html>
+

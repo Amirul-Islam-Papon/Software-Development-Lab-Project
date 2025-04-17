@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container">
+  <div id="carouselExampleIndicators" class="carousel slide mb-4" data-bs-ride="carousel">
+    <!-- Indicators -->
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      {% for banner in banners %}
+        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter }}" aria-label="Slide {{ forloop.counter }}"></button>
+      {% endfor %}
+    </div>
+
+    <!-- Carousel Items -->
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="https://imgd.aeplcdn.com/1056x594/n/cw/ec/103183/raider-125-right-front-three-quarter-5.png?isig=0&q=80&wm=3" class="d-block w-100 banner-image" alt="Default Banner">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>Welcome to Bike Buy and Sell</h5>
+          <p>Find the best bikes at unbeatable prices!</p>
+          <a href="{% url 'buy_list' %}" class="btn btn-primary">Shop Now</a>
+        </div>
+      </div>
+      {% for banner in banners %}
+        <div class="carousel-item">
+          <img src="{{ banner.banner_image.url }}" class="d-block w-100 banner-image" alt="Banner {{ forloop.counter }}">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Exclusive Deals</h5>
+            <p>Check out our latest collection of bikes.</p>
+            <a href="{% url 'buy_list' %}" class="btn btn-primary">Explore</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Controls -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+  <h2 class="text-center mb-4">Popular Motorcycles</h2>
+  <style>
+    /* Improved card design for homepage product view */
+    .card {
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .card-img-top {
+      height: 220px;
+      object-fit: cover;
+      border-top-left-radius: calc(0.25rem - 1px);
+      border-top-right-radius: calc(0.25rem - 1px);
+    }
+    h2.text-center {
+      background: rgba(62,127,233,0.1);
+      padding: 12px;
+      border-radius: 5px;
+    }
+  </style>
+  <div class="row">
+    {% for b in bike_buy_and_sell %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <a href="{% url 'product_detail' b.pk %}">
+            {% if b.get_first_image %}
+              <img src="{{ b.get_first_image.image.url }}" class="card-img-top" alt="{{ b.name }}">
+            {% else %}
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png" class="card-img-top" alt="No Image Available">
+            {% endif %}
+          </a>
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ b.name }}</h5>
+            <p class="card-text">{{ b.category }}</p>
+            <a href="{% url 'product_detail' b.pk %}" class="btn btn-primary">View Details</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if seller_bikes %}
+  <h2 class="text-center mt-5 mb-4">Your Listings</h2>
+  <div class="text-end mb-3">
+    <a href="{% url 'sell_list' %}" class="btn btn-primary">View All Listings</a>
+  </div>
+  <div class="row">
+    {% for bike in seller_bikes %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <a href="{% url 'product_detail' bike.pk %}">
+            {% if bike.get_first_image %}
+              <img src="{{ bike.get_first_image.image.url }}" class="card-img-top" alt="{{ bike.name }}">
+            {% else %}
+              <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="No Image Available">
+            {% endif %}
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">{{ bike.name }}</h5>
+            <p class="card-text text-muted">{{ bike.category.name }}</p>
+            <p class="card-text"><strong>Price:</strong> ${{ bike.price }}</p>
+            <p class="card-text"><strong>Quantity:</strong> {{ bike.quantity }}</p>
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'edit_bike' bike.pk %}" class="btn btn-warning btn-sm">Edit</a>
+              <a href="{% url 'delete_bike' bike.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this listing?');">Delete</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Floating Chat Button -->
+<a href="{% url 'chat_support' %}" class="btn btn-primary position-fixed" style="bottom: 20px; right: 20px; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+    💬
+</a>
+
+{% endblock %}

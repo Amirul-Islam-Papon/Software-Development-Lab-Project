@@ -1,0 +1,82 @@
+:root {
+  --primary-color: #125BFB;
+  --secondary-color: #1953D6;
+  --accent-color: #3E7FE9;
+  --text-color: #333;
+  --bg-color: #EFF8F8;
+  --dark-bg-color: #121212;
+  --font-family: 'Roboto', sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+/* Use a modern grid layout for container sections */
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* Modern Navbar */
+.navbar {
+  background-color: var(--accent-color);
+}
+
+.navbar a.nav-link,
+.navbar-brand {
+  color: #fff !important;
+  transition: color 0.3s ease;
+}
+
+.navbar a.nav-link:hover,
+.navbar-brand:hover {
+  color: var(--secondary-color) !important;
+}
+
+/* Card styling with smooth shadow and lift effect */
+.card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+/* Footer styled with grid */
+footer {
+  display: grid;
+  place-items: center;
+  background-color: var(--secondary-color);
+  color: #fff;
+  padding: 1rem;
+}
+
+/* Dark mode modifications */
+.dark-mode {
+  background-color: var(--dark-bg-color);
+  color: #fff;
+}
+
+.dark-mode .card {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+.dark-mode .navbar {
+  background-color: #333;
+}
+
+.dark-mode footer {
+  background-color: #1e1e1e;
+}
