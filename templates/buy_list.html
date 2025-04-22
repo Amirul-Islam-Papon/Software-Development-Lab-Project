@@ -41,7 +41,27 @@
 
 <div class="container">
   <h2 class="text-center mb-4">Available Bikes</h2>
-  <div class="row">
+  
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <form method="get" class="d-flex">
+        <input type="text" name="search" class="form-control me-2" placeholder="Search bikes..." value="{{ request.GET.search }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+    <div class="col-md-4">
+      <select class="form-select" name="category" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {% for category in categories %}
+          <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+            {{ category.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  
+  <div class="row g-4">
     {% for b in bike_buy_and_sell %}
       <div class="col-md-4 mb-4">
         <div class="card h-100 shadow-sm">
@@ -49,12 +69,13 @@
             {% if b.get_first_image %}
               <img src="{{ b.get_first_image.image.url }}" class="card-img-top" alt="{{ b.name }}">
             {% else %}
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png" class="card-img-top" alt="No Image Available">
+              <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="No Image Available">
             {% endif %}
           </a>
           <div class="card-body text-center">
             <h5 class="card-title">{{ b.name }}</h5>
             <p class="card-text">{{ b.category }}</p>
+            <p class="card-text"><strong>Price:</strong> ${{ b.price }}</p>
             <a href="{% url 'product_detail' b.pk %}" class="btn btn-primary">View Details</a>
           </div>
         </div>
