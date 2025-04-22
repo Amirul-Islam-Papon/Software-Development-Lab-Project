@@ -18,11 +18,11 @@
             {% endif %}
             
             {% for field in form.visible_fields %}
-                <div class="form-group mb-3">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                     {{ field|add_class:'form-control' }}
                     {% for error in field.errors %}
-                        <span class="text-danger">{{ error }}</span>
+                        <span class="text-danger small">{{ error }}</span>
                     {% endfor %}
                 </div>
             {% endfor %}

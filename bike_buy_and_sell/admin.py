@@ -8,6 +8,7 @@ from datetime import timedelta
 from .models import *
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html  # <-- to render link safely
+from django.contrib.auth.models import User  # Import the User model
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -219,3 +220,4 @@ admin.site.register(Orders, OrdersAdmin)
 admin.site.register(OrderItem, OrderItemAdmin)
 admin.site.register(Banner, BannerAdmin)
 admin.site.register(ChatMessage, ChatMessageAdmin)
+admin.site.register(User)  # Register the User model

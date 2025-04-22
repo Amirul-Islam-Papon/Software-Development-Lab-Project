@@ -26,6 +26,6 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-admin.site.site_header = 'Bike Buy And Sell'
-admin.site.site_title = 'Bike Buy And Sell'
-admin.site.index_title = 'Bike Buy And Sell'
+admin.site.site_header = 'Bike Source'
+admin.site.site_title = 'Bike Source'
+admin.site.index_title = 'Bike Source'

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bike Buy and Sell</title>
+  <title>Bike Source</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
@@ -162,27 +162,20 @@
           <a class="nav-link {% if request.resolver_match.url_name == 'buy_list' %}active{% endif %}" href="{% url 'buy_list' %}">Buy</a>
         </li>
         {% if request.user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'sell' %}active{% endif %}" href="{% url 'sell' %}">Sell</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}">Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-          </li>
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'registration' %}active{% endif %}" href="{% url 'registration' %}">Sign Up</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ request.user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'sell_list' %}">Sell List</a></li>
+              <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
           </li>
         {% endif %}
         <li class="nav-item">
-          <!-- Updated dark mode button with icon -->
-          <button class="btn btn-outline-light ms-3" onclick="toggleDarkMode()">
-              <span id="darkModeIcon">🌙</span>
+          <button id="darkModeToggle" class="btn btn-outline-light ms-2" onclick="toggleDarkMode()">
+            <span id="darkModeIcon">🌙</span>
           </button>
         </li>
       </ul>
@@ -203,6 +196,11 @@
   <p>&copy; 2025 Bike Source. All rights reserved. | <a href="{% url 'contact' %}">Contact Us</a></p>
 </footer>
 {% endif %}
+
+<!-- Back-to-Top Button -->
+<button id="backToTop" class="btn btn-primary position-fixed" style="bottom: 20px; right: 20px; display: none;">
+  ↑
+</button>
 
 <script>
   // Function to toggle dark mode with icon change
@@ -229,6 +227,19 @@
     } else {
       icon.textContent = "🌙";
     }
+  });
+
+  // Back-to-Top Button Logic
+  const backToTopButton = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      backToTopButton.style.display = 'block';
+    } else {
+      backToTopButton.style.display = 'none';
+    }
+  });
+  backToTopButton.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 </script>
 

@@ -68,20 +68,20 @@
       border-radius: 5px;
     }
   </style>
-  <div class="row">
+  <div class="row g-4">
     {% for b in bike_buy_and_sell %}
-      <div class="col-md-4 mb-4">
+      <div class="col-md-4">
         <div class="card h-100 shadow-sm">
           <a href="{% url 'product_detail' b.pk %}">
             {% if b.get_first_image %}
               <img src="{{ b.get_first_image.image.url }}" class="card-img-top" alt="{{ b.name }}">
             {% else %}
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png" class="card-img-top" alt="No Image Available">
+              <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="No Image Available">
             {% endif %}
           </a>
           <div class="card-body text-center">
             <h5 class="card-title">{{ b.name }}</h5>
-            <p class="card-text">{{ b.category }}</p>
+            <p class="card-text text-muted">{{ b.category }}</p>
             <a href="{% url 'product_detail' b.pk %}" class="btn btn-primary">View Details</a>
           </div>
         </div>
@@ -89,14 +89,14 @@
     {% endfor %}
   </div>
 
-  {% if seller_bikes %}
+  {% if request.user.is_authenticated %}
   <h2 class="text-center mt-5 mb-4">Your Listings</h2>
   <div class="text-end mb-3">
     <a href="{% url 'sell_list' %}" class="btn btn-primary">View All Listings</a>
   </div>
-  <div class="row">
+  <div class="row g-4">
     {% for bike in seller_bikes %}
-      <div class="col-md-4 mb-4">
+      <div class="col-md-4">
         <div class="card h-100 shadow-sm">
           <a href="{% url 'product_detail' bike.pk %}">
             {% if bike.get_first_image %}

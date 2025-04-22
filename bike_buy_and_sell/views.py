@@ -166,53 +166,106 @@ def sell_views(request):
         'category': category
     }
     if request.method == 'POST':
-        name = request.POST.get('name')
-        price = request.POST.get('price')
-        description = request.POST.get('description')
-        quantity = request.POST.get('quantity')
-        category = request.POST.get('category')
-        category_obj = Category.objects.get(pk=category)
-        user = request.user
-        bike_buy_and_sell_create = BikeBuyAndSell.objects.create(
-            name=name,
-            price=price,
-            quantity=quantity,
-            description=description,
-            category=category_obj,
-            user=user
-        )
-        print('bike_buy_and_sell_create = ', bike_buy_and_sell_create)
+        try:
+            name = request.POST.get('name')
+            price = request.POST.get('price')
+            description = request.POST.get('description')
+            quantity = request.POST.get('quantity')
+            category_id = request.POST.get('category')
+            image_list = request.FILES.getlist('image')
 
-        image_list = request.FILES.getlist('image')
-        print("image_list = ", image_list)
-        for image in image_list:
-            print("image = ", image)
-            BikeBuyAndSellImage.objects.create(
-                bike_buy_and_sell=bike_buy_and_sell_create,
-                image=image
+            # Validate required fields
+            if not (name and price and description and quantity and category_id):
+                messages.error(request, "All fields are required.")
+                return render(request, 'sell.html', context)
+
+            # Validate category
+            try:
+                category_obj = Category.objects.get(pk=category_id)
+            except Category.DoesNotExist:
+                messages.error(request, "Invalid category selected.")
+                return render(request, 'sell.html', context)
+
+            # Create the bike listing
+            bike_buy_and_sell_create = BikeBuyAndSell.objects.create(
+                name=name,
+                price=price,
+                quantity=quantity,
+                description=description,
+                category=category_obj,
+                user=request.user
             )
-        return redirect('sell_list')
 
-    return render(request, 'sell.html', context=context)
+            # Handle uploaded images
+            if not image_list:
+                messages.error(request, "At least one image is required.")
+                bike_buy_and_sell_create.delete()
+                return render(request, 'sell.html', context)
+
+            for image in image_list:
+                BikeBuyAndSellImage.objects.create(
+                    bike_buy_and_sell=bike_buy_and_sell_create,
+                    image=image
+                )
+
+            messages.success(request, "Bike listing created successfully!")
+            return redirect('sell_list')
+
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+            return render(request, 'sell.html', context)
+
+    return render(request, 'sell.html', context)
 
 
 @login_required(login_url='/login')
 def sell_list(request):
     bikes = BikeBuyAndSell.objects.filter(user=request.user)
 
+    # Handle form submission for adding a new bike
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name')
+            price = request.POST.get('price')
+            description = request.POST.get('description')
+            quantity = request.POST.get('quantity')
+            category_id = request.POST.get('category')
+            image_list = request.FILES.getlist('image')
+
+            # Validate required fields
+            if not (name and price and description and quantity and category_id):
+                messages.error(request, "All fields are required.")
+            else:
+                category_obj = Category.objects.get(pk=category_id)
+                bike = BikeBuyAndSell.objects.create(
+                    name=name,
+                    price=price,
+                    quantity=quantity,
+                    description=description,
+                    category=category_obj,
+                    user=request.user
+                )
+                for image in image_list:
+                    BikeBuyAndSellImage.objects.create(bike_buy_and_sell=bike, image=image)
+                messages.success(request, "Bike added successfully!")
+                return redirect('sell_list')
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+
     # Search and filter functionality
     search_query = request.GET.get('search', '')
-    category_id = request.GET.get('category', '')
+    selected_categories = request.GET.getlist('category', [])
 
     if search_query:
         bikes = bikes.filter(name__icontains=search_query)
-    if category_id:
-        bikes = bikes.filter(category_id=category_id)
+    if selected_categories:
+        bikes = bikes.filter(category_id__in=selected_categories)
 
     categories = Category.objects.all()
     context = {
         'bike_buy_and_sell': bikes,
         'categories': categories,
+        'selected_categories': selected_categories,
     }
     return render(request, 'sell_list.html', context)
 

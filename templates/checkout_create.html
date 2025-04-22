@@ -27,9 +27,9 @@
 
     <!-- Order Summary -->
     <div class="col-md-4">
-      <div class="card">
-        <div class="card-header">
-          Your Order
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Your Order</h5>
         </div>
         <ul class="list-group list-group-flush">
           {% for item in cart %}
@@ -38,7 +38,7 @@
               <span>Taka {{ item.total_price|floatformat:2 }}</span>
             </li>
           {% endfor %}
-          <li class="list-group-item d-flex justify-content-between align-items-center active">
+          <li class="list-group-item d-flex justify-content-between align-items-center bg-primary text-white">
             <strong>Total Cost:</strong>
             <strong>Taka {{ cart.get_total_price|floatformat:2 }}</strong>
           </li>
