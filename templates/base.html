@@ -155,9 +155,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" href="{% url 'index' %}">Home</a>
-        </li>
+        <!-- Removed Home button -->
         <li class="nav-item">
           <a class="nav-link {% if request.resolver_match.url_name == 'buy_list' %}active{% endif %}" href="{% url 'buy_list' %}">Buy</a>
         </li>
@@ -171,6 +169,10 @@
               <li><a class="dropdown-item" href="{% url 'sell_list' %}">Sell List</a></li>
               <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
             </ul>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
           </li>
         {% endif %}
         <li class="nav-item">
