@@ -5,17 +5,17 @@
     <div class="row">
         <!-- Bike Image Section -->
         <div class="col-md-6">
-            <div id="bikeImageCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div id="bikeImageCarousel" class="carousel slide border rounded shadow-sm" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     {% if product.get_first_image %}
                         {% for image in product.images.all %}
                             <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ product.name }}">
+                                <img src="{{ image.image.url }}" class="d-block w-100 rounded" alt="{{ product.name }}">
                             </div>
                         {% endfor %}
                     {% else %}
                         <div class="carousel-item active">
-                            <img src="https://via.placeholder.com/400x300" class="d-block w-100" alt="No Image Available">
+                            <img src="https://via.placeholder.com/400x300" class="d-block w-100 rounded" alt="No Image Available">
                         </div>
                     {% endif %}
                 </div>
@@ -41,9 +41,9 @@
                     <p><strong>Quantity Available:</strong> {{ product.quantity }}</p>
                     <hr>
                     <h5 class="text-secondary">Seller Information</h5>
-                    <div class="border p-3 rounded">
+                    <div class="border p-3 rounded bg-light">
                         <p><strong>Name:</strong> {{ seller.first_name }} {{ seller.last_name }}</p>
-                        <p><strong>Email:</strong> <a href="mailto:{{ seller.email }}">{{ seller.email }}</a></p>
+                        <p><strong>Email:</strong> <a href="mailto:{{ seller.email }}" class="text-decoration-none">{{ seller.email }}</a></p>
                         <p><strong>Username:</strong> {{ seller.username }}</p>
                     </div>
                     <hr>
