@@ -89,38 +89,7 @@
     {% endfor %}
   </div>
 
-  {% if request.user.is_authenticated %}
-  <h2 class="text-center mt-5 mb-4">Your Listings</h2>
-  <div class="text-end mb-3">
-    <a href="{% url 'sell_list' %}" class="btn btn-primary">View All Listings</a>
-  </div>
-  <div class="row g-4">
-    {% for bike in seller_bikes %}
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <a href="{% url 'product_detail' bike.pk %}">
-            {% if bike.get_first_image %}
-              <img src="{{ bike.get_first_image.image.url }}" class="card-img-top" alt="{{ bike.name }}">
-            {% else %}
-              <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="No Image Available">
-            {% endif %}
-          </a>
-          <div class="card-body">
-            <h5 class="card-title">{{ bike.name }}</h5>
-            <p class="card-text text-muted">{{ bike.category.name }}</p>
-            <p class="card-text"><strong>Price:</strong> ${{ bike.price }}</p>
-            <p class="card-text"><strong>Quantity:</strong> {{ bike.quantity }}</p>
-            <div class="d-flex justify-content-between">
-              <a href="{% url 'edit_bike' bike.pk %}" class="btn btn-warning btn-sm">Edit</a>
-              <a href="{% url 'delete_bike' bike.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this listing?');">Delete</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
+
 
 <!-- Floating Chat Button -->
 <a href="{% url 'chat_support' %}" class="btn btn-primary position-fixed" style="bottom: 20px; right: 20px; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">

@@ -43,21 +43,20 @@
   <h2 class="text-center mb-4">Available Bikes</h2>
   
   <div class="row mb-4">
-    <div class="col-md-8">
+    <div class="col-md-6">
       <form method="get" class="d-flex">
-        <input type="text" name="search" class="form-control me-2" placeholder="Search bikes..." value="{{ request.GET.search }}">
-        <button type="submit" class="btn btn-primary">Search</button>
+        <select class="form-select me-2" name="category" onchange="this.form.submit()">
+          <option value="">Select Brands</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+        <input type="number" name="min_price" class="form-control me-2" placeholder="Min Price" value="{{ request.GET.min_price }}">
+        <input type="number" name="max_price" class="form-control me-2" placeholder="Max Price" value="{{ request.GET.max_price }}">
+        <button type="submit" class="btn btn-primary">Filter</button>
       </form>
-    </div>
-    <div class="col-md-4">
-      <select class="form-select" name="category" onchange="this.form.submit()">
-        <option value="">All Categories</option>
-        {% for category in categories %}
-          <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
-            {{ category.name }}
-          </option>
-        {% endfor %}
-      </select>
     </div>
   </div>
   
@@ -75,7 +74,7 @@
           <div class="card-body text-center">
             <h5 class="card-title">{{ b.name }}</h5>
             <p class="card-text">{{ b.category }}</p>
-            <p class="card-text"><strong>Price:</strong> ${{ b.price }}</p>
+            <p class="card-text"><strong>Price:</strong> BDT: {{ b.price }}</p>
             <a href="{% url 'product_detail' b.pk %}" class="btn btn-primary">View Details</a>
           </div>
         </div>
@@ -88,17 +87,17 @@
       <ul class="pagination">
         {% if bike_buy_and_sell.has_previous %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ bike_buy_and_sell.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Previous</a>
+            <a class="page-link" href="?page={{ bike_buy_and_sell.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}">Previous</a>
           </li>
         {% endif %}
         {% for num in bike_buy_and_sell.paginator.page_range %}
           <li class="page-item {% if bike_buy_and_sell.number == num %}active{% endif %}">
-            <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ num }}</a>
+            <a class="page-link" href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}">{{ num }}</a>
           </li>
         {% endfor %}
         {% if bike_buy_and_sell.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ bike_buy_and_sell.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Next</a>
+            <a class="page-link" href="?page={{ bike_buy_and_sell.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}">Next</a>
           </li>
         {% endif %}
       </ul>

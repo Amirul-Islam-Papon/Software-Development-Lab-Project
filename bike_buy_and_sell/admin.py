@@ -152,7 +152,7 @@ def admin_dashboard(request):
         total=Coalesce(Sum('total_price'), 0))['total']
     
     last_month_sales = Orders.objects.filter(
-        created_at__lte=last_month
+        created_at__gte=last_month
     ).aggregate(total=Coalesce(Sum('total_price'), 0))['total']
     
     sales_trend = (

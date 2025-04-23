@@ -112,28 +112,29 @@
     document.addEventListener('DOMContentLoaded', function() {
         const chatBox = document.querySelector('.chat-box');
         const form = document.querySelector('.chat-form');
-        
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
         // Auto-scroll to bottom on load
         chatBox.scrollTop = chatBox.scrollHeight;
-        
+
         // Handle form submission
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             try {
                 const response = await fetch(window.location.href, {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                        'X-CSRFToken': csrfToken
                     }
                 });
-                
+
                 if (response.ok) {
                     // Clear the input field
                     form.querySelector('input[name="message"]').value = '';
-                    
+
                     // Reload the messages
                     location.reload();
                 }

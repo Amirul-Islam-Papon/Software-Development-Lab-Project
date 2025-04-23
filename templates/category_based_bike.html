@@ -8,7 +8,7 @@
 
     <div class="container-fluid">
         <div class="navbar-search smallsearch col-sm-7 col-xs-11">
-              <form  action="/search" method="get">
+              <form action="{% url 'search' %}" method="get">
                 <div class="row">
                     <input class="form-control col-xl-11" type="search" placeholder="Search for names and more" name="query" id="query">
 <br>

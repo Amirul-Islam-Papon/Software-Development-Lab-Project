@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse  # Add this import at the top
+from django.http import HttpResponseForbidden  # Add this import
 
 from .cart import Cart
 from .forms import *
@@ -153,8 +154,22 @@ def booking_list(request):
 
 def buy_list(request):
     bike_buy_and_sell = BikeBuyAndSell.objects.filter(status='Approved').order_by('-id')
+    
+    # Filtering logic
+    category_id = request.GET.get('category')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    if category_id:
+        bike_buy_and_sell = bike_buy_and_sell.filter(category_id=category_id)
+    if min_price:
+        bike_buy_and_sell = bike_buy_and_sell.filter(price__gte=min_price)
+    if max_price:
+        bike_buy_and_sell = bike_buy_and_sell.filter(price__lte=max_price)
+
     context = {
-        'bike_buy_and_sell': bike_buy_and_sell
+        'bike_buy_and_sell': bike_buy_and_sell,
+        'categories': Category.objects.all(),  # Pass categories for the dropdown
     }
     return render(request, 'buy_list.html', context)
 
@@ -395,6 +410,12 @@ def chat_support(request):
     return render(request, 'chat_support.html', {'messages': messages_list})
 
 
+def chat_support_redirect(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    return redirect('chat_support')
+
+
 @login_required
 def user_chat_support(request):
     if request.method == 'POST':
@@ -424,8 +445,14 @@ def edit_bike(request, bike_id):
         bike.quantity = request.POST.get('quantity')
         bike.category_id = request.POST.get('category')
         bike.save()
+
+        # Handle new image uploads
+        images = request.FILES.getlist('images')
+        for image in images:
+            BikeBuyAndSellImage.objects.create(bike_buy_and_sell=bike, image=image)
+
         messages.success(request, "Bike listing updated successfully!")
-        return redirect('index')
+        return redirect('sell_list')
     categories = Category.objects.all()
     return render(request, 'edit_bike.html', {'bike': bike, 'categories': categories})
 
@@ -436,6 +463,16 @@ def delete_bike(request, bike_id):
     bike.delete()
     messages.success(request, "Bike listing deleted successfully!")
     return redirect('index')
+
+
+@login_required(login_url='/login/')
+def delete_bike_image(request, image_id):
+    image = get_object_or_404(BikeBuyAndSellImage, id=image_id)
+    if image.bike_buy_and_sell.user != request.user:
+        return HttpResponseForbidden("You are not allowed to delete this image.")
+    image.delete()
+    messages.success(request, "Image deleted successfully!")
+    return redirect('edit_bike', bike_id=image.bike_buy_and_sell.id)
 
 
 @login_required

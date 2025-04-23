@@ -5,38 +5,52 @@
     <div class="row">
         <!-- Bike Image Section -->
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
+            <div id="bikeImageCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
                     {% if product.get_first_image %}
                         {% for image in product.images.all %}
-                            <img src="{{ image.image.url }}" class="img-fluid mb-3" alt="{{ product.name }}">
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ product.name }}">
+                            </div>
                         {% endfor %}
                     {% else %}
-                        <img src="https://via.placeholder.com/400x300" class="img-fluid mb-3" alt="No Image Available">
+                        <div class="carousel-item active">
+                            <img src="https://via.placeholder.com/400x300" class="d-block w-100" alt="No Image Available">
+                        </div>
                     {% endif %}
                 </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#bikeImageCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#bikeImageCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
         </div>
 
         <!-- Bike Details Section -->
         <div class="col-md-6">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <h3>{{ product.name }}</h3>
+                    <h3 class="text-primary">{{ product.name }}</h3>
                     <h6 class="text-muted">{{ product.category.name }}</h6>
                     <p>{{ product.description|safe|linebreaksbr }}</p>
-                    <p><strong>Price:</strong> ${{ product.price }}</p>
+                    <p><strong>Price:</strong> BDT: {{ product.price }}</p>
                     <p><strong>Quantity Available:</strong> {{ product.quantity }}</p>
                     <hr>
-                    <h5>Seller Information</h5>
-                    <p><strong>Seller Name:</strong> {{ seller.first_name }} {{ seller.last_name }}</p>
-                    <p><strong>Email:</strong> <a href="mailto:{{ seller.email }}">{{ seller.email }}</a></p>
-                    <p><strong>Username:</strong> {{ seller.username }}</p>
+                    <h5 class="text-secondary">Seller Information</h5>
+                    <div class="border p-3 rounded">
+                        <p><strong>Name:</strong> {{ seller.first_name }} {{ seller.last_name }}</p>
+                        <p><strong>Email:</strong> <a href="mailto:{{ seller.email }}">{{ seller.email }}</a></p>
+                        <p><strong>Username:</strong> {{ seller.username }}</p>
+                    </div>
                     <hr>
                     <form action="{% url 'cart_add' product.id %}" method="post">
                         {% csrf_token %}
                         {{ cart_product_form }}
-                        <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
                     </form>
                 </div>
             </div>

@@ -32,4 +32,6 @@ urlpatterns = [
     path('admin-chat-support/', views.admin_chat_support, name='admin_chat_support'),
     path('edit-bike/<int:bike_id>/', views.edit_bike, name='edit_bike'),
     path('delete-bike/<int:bike_id>/', views.delete_bike, name='delete_bike'),
+    path('delete-bike-image/<int:image_id>/', views.delete_bike_image, name='delete_bike_image'),
+    path('chat-support-redirect/', views.chat_support_redirect, name='chat_support_redirect'),
 ]
