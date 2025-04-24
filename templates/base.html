@@ -246,12 +246,20 @@
   {% endblock %}
 </div>
 
-<!-- New floating chat button (visible on every page) -->
-<a href="{% url 'bike_buy_and_sell:chat_support_redirect' %}" class="chat-button">
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-    <path d="M8 0a8 8 0 1 0 4.906 14.32L16 16l-1.68-3.094A8 8 0 0 0 8 0zM3.657 4.657a1 1 0 1 1 1.414-1.414 1 1 0 0 1-1.414 1.414zm4 0a1 1 0 1 1 1.414-1.414 1 1 0 0 1-1.414 1.414zm4 0a1 1 0 1 1 1.414-1.414 1 1 0 0 1-1.414 1.414z"/>
-  </svg>
-</a>
+<!-- Replace the existing floating chat button -->
+{% if request.user.is_authenticated %}
+    <button type="button" class="chat-button" data-bs-toggle="modal" data-bs-target="#chatModal" style="border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 24px; height: 24px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.98 9.98 0 01-5.197-1.582L3 19l1.582-3.803A8.995 8.995 0 012 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+    </button>
+{% else %}
+    <button type="button" class="chat-button" onclick="alert('Please log in to use chat support');" style="border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 24px; height: 24px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.98 9.98 0 01-5.197-1.582L3 19l1.582-3.803A8.995 8.995 0 012 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+    </button>
+{% endif %}
 
 <!-- Floating Cart Button -->
 <a href="{% url 'bike_buy_and_sell:cart_detail' %}" class="cart-button">
@@ -273,6 +281,21 @@
 <button id="backToTop" class="btn btn-primary position-fixed" style="bottom: 20px; right: 20px; display: none;">
   ↑
 </button>
+
+<!-- Add the Chat Modal markup before the closing </body> tag -->
+<div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="chatModalLabel">Chat Support</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="chatModalContent">
+        <!-- Chat content will be loaded here -->
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   // Function to toggle dark mode with icon change
@@ -312,6 +335,22 @@
   });
   backToTopButton.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // When the chat modal is shown, load the chat popup content via AJAX
+  const chatModal = document.getElementById('chatModal');
+  chatModal.addEventListener('shown.bs.modal', async () => {
+    try {
+      const response = await fetch("{% url 'bike_buy_and_sell:chat_support_popup' %}");
+      if (response.ok) {
+        document.getElementById('chatModalContent').innerHTML = await response.text();
+      } else {
+        document.getElementById('chatModalContent').innerHTML = "<p>Error loading chat. Please try again.</p>";
+      }
+    } catch (error) {
+      console.error('Error fetching chat:', error);
+      document.getElementById('chatModalContent').innerHTML = "<p>Error loading chat. Please try again.</p>";
+    }
   });
 </script>
 

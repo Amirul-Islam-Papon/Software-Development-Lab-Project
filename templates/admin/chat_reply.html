@@ -30,7 +30,7 @@
       <div class="card-header">Chat History</div>
       <div class="card-body">
         {% for msg in chat_history %}
-          <p><strong>{{ msg.user.username }}:</strong> {{ msg.message }} <em>({{ msg.timestamp }})</em></p>
+          <p><strong>{% if msg.is_admin %}Admin{% else %}{{ msg.user.username }}{% endif %}:</strong> {{ msg.message }} <em>({{ msg.timestamp }})</em></p>
         {% endfor %}
       </div>
     </div>

@@ -34,4 +34,5 @@ urlpatterns = [
     path('delete-bike-image/<int:image_id>/', views.delete_bike_image, name='delete_bike_image'),
     path('chat-support-redirect/', views.chat_support_redirect, name='chat_support_redirect'),
     path('activate/<uidb64>/<token>/', views.activate_account, name='activate'),
+    path('chat-support-popup/', views.chat_support_popup, name='chat_support_popup'),
 ]

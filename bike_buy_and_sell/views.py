@@ -556,3 +556,9 @@ def admin_order_details(request, order_id):
     items = OrderItem.objects.filter(order=order)
     return render(request, 'admin/order_details.html', {'order': order, 'items': items})
 
+
+@login_required
+def chat_support_popup(request):
+    messages_list = ChatMessage.objects.filter(user=request.user).order_by('timestamp')
+    return render(request, 'partials/chat_popup.html', {'chat_messages': messages_list})
+
