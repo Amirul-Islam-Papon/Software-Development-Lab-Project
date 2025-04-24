@@ -7,7 +7,7 @@
         </div>
         <div class="card-body">
             <div class="chat-box border rounded p-3 mb-3" style="height: 450px; overflow-y: scroll;">
-                {% for message in messages %}
+                {% for message in chat_messages %}
                     <div class="d-flex mb-3 {% if message.is_admin %}justify-content-start{% else %}justify-content-end{% endif %}">
                         <div class="chat-bubble p-3 rounded {% if message.is_admin %}bg-light border{% else %}bg-primary text-white{% endif %}" 
                              style="max-width: 70%; position: relative;">

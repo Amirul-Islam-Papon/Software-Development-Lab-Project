@@ -7,7 +7,7 @@ from django.dispatch import receiver
 class Category(models.Model):
     name = models.CharField(max_length=350)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -25,7 +25,7 @@ class BikeBuyAndSell(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, null=True, choices=STATUS, default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -50,7 +50,7 @@ class BikeBuyAndSellImage(models.Model):
     bike_buy_and_sell = models.ForeignKey(BikeBuyAndSell, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='bike_buy_and_sell_images/')
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Orders(models.Model):
@@ -68,7 +68,7 @@ class Orders(models.Model):
     order_date = models.DateField(auto_now_add=True, null=True)
     status = models.CharField(max_length=50, null=True, choices=STATUS, default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.id)
@@ -85,7 +85,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Orders, on_delete=models.CASCADE)
     bike_buy_and_sell = models.ForeignKey(BikeBuyAndSell, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
 

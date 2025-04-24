@@ -10,45 +10,47 @@
   <!-- Added modern CSS stylesheet -->
   <link rel="stylesheet" href="{% static 'css/modern.css' %}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Added FontAwesome for chat support icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     body {
       font-family: 'Inter', sans-serif; /* Updated to use Inter font */
-      background-color: #ffc100; /* Updated */
+      background-color: #c9fbed; /* Updated */
       color: #333;
       transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
     }
 
     .navbar {
-      background-color: #ff9a00; /* Updated */
+      background-color: #73e6cb; /* Updated */
     }
 
     .navbar-brand, .nav-link {
-      color: #754C00 !important;
+      color: #1f473e !important;
     }
 
     .navbar-brand:hover, .nav-link:hover {
-      color: #ff7400 !important; /* Updated */
+      color: #479281 !important; /* Updated */
     }
 
     .btn-primary {
-      background-color: #ff4d00; /* Updated */
-      border-color: #ff4d00;
+      background-color: #5cbba5; /* Updated */
+      border-color: #5cbba5;
     }
 
     .btn-primary:hover {
-      background-color: #ff0000; /* Updated */
-      border-color: #ff0000;
+      background-color: #479281; /* Updated */
+      border-color: #479281;
     }
 
     footer {
-      background-color: #ff7400; /* Updated */
+      background-color: #326b5e; /* Updated */
       color: #fff;
       padding: 20px 0;
       text-align: center;
     }
 
     footer a {
-      color: #754C00; /* Updated */
+      color: #1f473e; /* Updated */
       text-decoration: none;
     }
 
@@ -125,7 +127,7 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background-color: #ff4d00; /* Updated */
+      background-color: #5cbba5; /* Updated */
       color: #fff;
       border: none;
       border-radius: 50%;
@@ -141,7 +143,7 @@
       transition: background-color 0.3s ease, transform 0.3s ease;
     }
     .chat-button:hover {
-      background-color: #ff0000; /* Updated */
+      background-color: #479281; /* Updated */
       transform: scale(1.1);
     }
 
@@ -149,7 +151,7 @@
       position: fixed;
       bottom: 90px;
       right: 20px;
-      background-color: #ff4d00; /* Updated */
+      background-color: #5cbba5; /* Updated */
       color: #fff;
       border: none;
       border-radius: 50%;
@@ -166,7 +168,7 @@
     }
 
     .cart-button:hover {
-      background-color: #ff0000; /* Updated */
+      background-color: #479281; /* Updated */
       transform: scale(1.1);
     }
 
@@ -174,7 +176,7 @@
       position: absolute;
       top: 5px;
       right: 5px;
-      background-color: #ff0000; /* Updated */
+      background-color: #479281; /* Updated */
       color: #fff;
       font-size: 14px;
       font-weight: bold;
@@ -231,6 +233,15 @@
 </nav>
 
 <div class="container mt-4">
+  {# Display Django messages #}
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mt-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
   {% block content %}
   {% endblock %}
 </div>

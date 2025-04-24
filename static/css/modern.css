@@ -1,10 +1,10 @@
 :root {
-  --primary-color: #ffc100; /* Updated */
-  --secondary-color: #ff9a00; /* Updated */
-  --accent-color: #ff7400; /* Updated */
-  --text-color: #333;
-  --bg-color: #ffc100; /* Updated */
-  --dark-bg-color: #121212;
+  --primary-color: #c9fbed;    /* updated */
+  --secondary-color: #73e6cb;  /* updated */
+  --accent-color: #5cbba5;     /* updated */
+  --text-color: #0d2520;       /* updated */
+  --bg-color: #c9fbed;         /* updated */
+  --dark-bg-color: #0d2520;    /* updated */
   --font-family: 'Inter', sans-serif; /* Updated to use Inter font */
 }
 

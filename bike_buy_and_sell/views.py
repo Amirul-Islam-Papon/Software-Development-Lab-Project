@@ -250,12 +250,12 @@ def sell_views(request):
                     image=image
                 )
 
-            messages.success(request, "Bike listing created successfully!")
-            return redirect('sell_list')
+            # Updated success message after bike is added
+            messages.success(request, "Your bike has been added.")
+            return redirect('bike_buy_and_sell:sell_list')
         except Exception as e:
             messages.error(request, f"An error occurred: {str(e)}")
             return render(request, 'sell.html', context)
-
     return render(request, 'sell.html', context)
 
 
@@ -287,7 +287,7 @@ def sell_list(request):
                 for image in image_list:
                     BikeBuyAndSellImage.objects.create(bike_buy_and_sell=bike, image=image)
                 messages.success(request, f"Bike added successfully! Status: {bike.status}")
-                return redirect('sell_list')
+                return redirect('bike_buy_and_sell:sell_list')  # updated redirect with namespace
         except Exception as e:
             messages.error(request, f"An error occurred: {str(e)}")
 
@@ -424,7 +424,8 @@ def chat_support(request):
             )
     # Fetch all messages for the current user
     messages_list = ChatMessage.objects.filter(user=request.user).order_by('timestamp')
-    return render(request, 'chat_support.html', {'messages': messages_list})
+    # Pass messages as "chat_messages" instead of "messages"
+    return render(request, 'chat_support.html', {'chat_messages': messages_list})
 
 
 def chat_support_redirect(request):
@@ -446,9 +447,9 @@ def user_chat_support(request):
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({'status': 'success'})
             return redirect('bike_buy_and_sell:chat_support')  # updated redirect with namespace
-    # Remove parent=None filter so that admin replies (child messages) are included
+    # Pass messages as "chat_messages" instead of "messages"
     messages_list = ChatMessage.objects.filter(user=request.user).order_by('timestamp')
-    return render(request, 'chat_support.html', {'messages': messages_list})
+    return render(request, 'chat_support.html', {'chat_messages': messages_list})
 
 
 @login_required(login_url='/login/')
@@ -476,8 +477,10 @@ def edit_bike(request, bike_id):
 def delete_bike(request, bike_id):
     bike = get_object_or_404(BikeBuyAndSell, id=bike_id, user=request.user)
     bike.delete()
+    from django.core.cache import cache  # ensure cache is imported
+    cache.clear()  # Clear cache to update buy list
     messages.success(request, "Bike listing deleted successfully!")
-    return redirect('bike_buy_and_sell:bike_index')  # updated redirect with namespace
+    return redirect('bike_buy_and_sell:sell_list')
 
 
 @login_required(login_url='/login/')

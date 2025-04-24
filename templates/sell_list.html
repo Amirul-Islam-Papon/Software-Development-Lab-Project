@@ -57,7 +57,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="category">Category</label>
                                 <select class="form-control" id="id_category" name="category" required>
-                                    <option selected>Select Category</option>
+                                    <option value="" selected disabled>Select Category</option>
                                     {% for c in categories %}
                                         <option value="{{ c.id }}">{{ c.name }}</option>
                                     {% endfor %}
