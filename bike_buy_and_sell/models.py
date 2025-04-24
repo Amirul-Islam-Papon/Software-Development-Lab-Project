@@ -21,7 +21,6 @@ class BikeBuyAndSell(models.Model):
     name = models.CharField(max_length=300)
     price = models.IntegerField()
     description = models.TextField()
-    quantity = models.IntegerField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, null=True, choices=STATUS, default='Pending')
@@ -37,6 +36,15 @@ class BikeBuyAndSell(models.Model):
             print("|", obj.first())
             return obj.first()
         return obj
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['category']),
+            models.Index(fields=['user']),
+            models.Index(fields=['price']),
+            models.Index(fields=['created_at']),
+        ]
 
 
 class BikeBuyAndSellImage(models.Model):
@@ -65,6 +73,13 @@ class Orders(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+        ]
 
 
 class OrderItem(models.Model):

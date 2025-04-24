@@ -55,10 +55,6 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="quantity">Quantity</label>
-                                <input type="number" class="form-control" id="id_quantity" name="quantity" placeholder="Enter Quantity" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
                                 <label for="category">Category</label>
                                 <select class="form-control" id="id_category" name="category" required>
                                     <option selected>Select Category</option>
@@ -88,7 +84,7 @@
         {% for bike in bike_buy_and_sell %}
             <div class="col-md-4">
                 <div class="card h-100 shadow-sm">
-                    <a href="{% url 'product_detail' bike.pk %}">
+                    <a href="{% url 'bike_buy_and_sell:product_detail' bike.pk %}">
                         {% if bike.get_first_image %}
                             <img src="{{ bike.get_first_image.image.url }}" class="card-img-top" alt="{{ bike.name }}">
                         {% else %}
@@ -99,7 +95,7 @@
                         <h5 class="card-title">{{ bike.name }}</h5>
                         <p class="card-text text-muted">{{ bike.category.name }}</p>
                         <p class="card-text"><strong>Price:</strong> BDT: {{ bike.price }}</p>
-                        <p class="card-text"><strong>Quantity:</strong> {{ bike.quantity }}</p>
+                        <p class="card-text"><strong>Status:</strong> {{ bike.status }}</p>
                         <div class="d-flex justify-content-between">
                             <a href="{% url 'edit_bike' bike.pk %}" class="btn btn-warning btn-sm">Edit</a>
                             <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ bike.pk }}">Delete</button>

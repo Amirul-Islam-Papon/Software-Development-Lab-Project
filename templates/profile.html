@@ -28,9 +28,9 @@
                     <p><strong>Date Joined:</strong> {{ user.date_joined|date:"M d, Y" }}</p>
                     <p><strong>Last Login:</strong> {{ user.last_login|date:"M d, Y H:i" }}</p>
                     <div class="d-flex justify-content-between mt-4">
-                        <a href="{% url 'update_profile' %}" class="btn btn-primary">Update Profile</a>
-                        <a href="{% url 'change_password' %}" class="btn btn-secondary">Change Password</a>
-                        <a href="{% url 'booking_list' %}" class="btn btn-info">Order History</a>
+                        <a href="{% url 'bike_buy_and_sell:update_profile' %}" class="btn btn-primary">Update Profile</a>
+                        <a href="{% url 'bike_buy_and_sell:change_password' %}" class="btn btn-secondary">Change Password</a>
+                        <a href="{% url 'bike_buy_and_sell:booking_list' %}" class="btn btn-info">Order History</a>
                     </div>
                 </div>
             </div>

@@ -38,7 +38,6 @@
                     <h6 class="text-muted">{{ product.category.name }}</h6>
                     <p>{{ product.description|safe|linebreaksbr }}</p>
                     <p><strong>Price:</strong> BDT: {{ product.price }}</p>
-                    <p><strong>Quantity Available:</strong> {{ product.quantity }}</p>
                     <hr>
                     <h5 class="text-secondary">Seller Information</h5>
                     <div class="border p-3 rounded bg-light">
@@ -49,7 +48,6 @@
                     <hr>
                     <form action="{% url 'cart_add' product.id %}" method="post">
                         {% csrf_token %}
-                        {{ cart_product_form }}
                         <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
                     </form>
                 </div>

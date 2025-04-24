@@ -191,7 +191,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'index' %}">Bike Source</a>
+    <a class="navbar-brand" href="{% url 'bike_buy_and_sell:bike_index' %}">Bike Source</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -199,7 +199,7 @@
       <ul class="navbar-nav ms-auto">
         <!-- Removed Home button -->
         <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.url_name == 'buy_list' %}active{% endif %}" href="{% url 'buy_list' %}">Buy</a>
+          <a class="nav-link {% if request.resolver_match.url_name == 'buy_list' %}active{% endif %}" href="{% url 'bike_buy_and_sell:buy_list' %}">Buy</a>
         </li>
         {% if request.user.is_authenticated %}
           <li class="nav-item dropdown">
@@ -207,17 +207,17 @@
               {{ request.user.username }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-              <li><a class="dropdown-item" href="{% url 'sell_list' %}">Sell List</a></li>
-              <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+              <li><a class="dropdown-item" href="{% url 'bike_buy_and_sell:profile' %}">Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'bike_buy_and_sell:sell_list' %}">Sell List</a></li>
+              <li><a class="dropdown-item" href="{% url 'bike_buy_and_sell:logout' %}">Logout</a></li>
             </ul>
           </li>
         {% else %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'registration' %}">Sign Up</a>
+            <a class="nav-link" href="{% url 'bike_buy_and_sell:registration' %}">Sign Up</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Login</a>
+            <a class="nav-link" href="{% url 'bike_buy_and_sell:login' %}">Login</a>
           </li>
         {% endif %}
         <li class="nav-item">
@@ -236,14 +236,14 @@
 </div>
 
 <!-- New floating chat button (visible on every page) -->
-<a href="{% url 'chat_support_redirect' %}" class="chat-button">
+<a href="{% url 'bike_buy_and_sell:chat_support_redirect' %}" class="chat-button">
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
     <path d="M8 0a8 8 0 1 0 4.906 14.32L16 16l-1.68-3.094A8 8 0 0 0 8 0zM3.657 4.657a1 1 0 1 1 1.414-1.414 1 1 0 0 1-1.414 1.414zm4 0a1 1 0 1 1 1.414-1.414 1 1 0 0 1-1.414 1.414zm4 0a1 1 0 1 1 1.414-1.414 1 1 0 0 1-1.414 1.414z"/>
   </svg>
 </a>
 
 <!-- Floating Cart Button -->
-<a href="{% url 'cart_detail' %}" class="cart-button">
+<a href="{% url 'bike_buy_and_sell:cart_detail' %}" class="cart-button">
   🛒
   <span class="cart-count">
     {% with totail_items=cart|length %}

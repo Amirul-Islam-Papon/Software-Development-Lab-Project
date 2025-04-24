@@ -9,6 +9,8 @@ from .models import *
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html  # <-- to render link safely
 from django.contrib.auth.models import User  # Import the User model
+from django.http import HttpResponse
+import csv
 
 
 class CategoryAdmin(admin.ModelAdmin):
@@ -35,9 +37,21 @@ class BikeBuyAndSellImageAdmin(admin.ModelAdmin):
 
 
 class OrdersAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'email', 'address', 'mobile', 'total_price', 'order_date', 'status', 'created_at')
-    search_fields = ('id', 'user', 'email', 'address', 'mobile', 'total_price', 'order_date', 'status', 'created_at')
-    list_filter = ['status']
+    list_display = ('id', 'user', 'email', 'address', 'mobile', 'total_price', 'order_date', 'status', 'created_at', 'view_order_details')
+    search_fields = ('id', 'user__username', 'email', 'address', 'mobile', 'total_price', 'order_date', 'status', 'created_at')
+    list_filter = ['status', 'order_date']
+    actions = ['update_status']
+
+    def update_status(self, request, queryset):
+        for order in queryset:
+            order.status = 'Order Confirmed'
+            order.save()
+        self.message_user(request, "Selected orders have been updated to 'Order Confirmed'.")
+    update_status.short_description = "Update status to 'Order Confirmed'"
+
+    def view_order_details(self, obj):
+        return format_html('<a href="{}">View Details</a>', reverse('bike_buy_and_sell:admin_order_details', args=[obj.pk]))
+    view_order_details.short_description = "Order Details"
 
 
 class OrderItemAdmin(admin.ModelAdmin):

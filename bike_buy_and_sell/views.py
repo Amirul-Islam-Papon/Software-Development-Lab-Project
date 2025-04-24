@@ -6,6 +6,15 @@ from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse  # Add this import at the top
 from django.http import HttpResponseForbidden  # Add this import
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.conf import settings
+from django.http import HttpResponse
+from django.contrib.auth.models import User
 
 from .cart import Cart
 from .forms import *
@@ -16,6 +25,10 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
 from .models import *
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.core.cache import cache
 
 
 @login_required(login_url='/login/')
@@ -33,27 +46,31 @@ def contact_view(request):
 
 
 def index(request):
-    bike_buy_and_sell = BikeBuyAndSell.objects.filter(status="Approved").order_by('-id')
-    banner = Banner.objects.all().order_by('-id')
-    categories = Category.objects.all().order_by('-id')
+    # Add caching for approved bikes
+    bikes = cache.get('index_bikes')
+    if bikes is None:
+        bikes = BikeBuyAndSell.objects.select_related('category', 'user').filter(
+            status="Approved"
+        ).order_by('-id')[:12]  # Limit to 12 recent bikes
+        cache.set('index_bikes', bikes, 300)
 
-    # Include seller's listings if the user is authenticated
-    seller_bikes = None
-    if request.user.is_authenticated:
-        seller_bikes = BikeBuyAndSell.objects.filter(user=request.user).order_by('-id')
+    # Add caching for banners
+    banners = cache.get('index_banners') 
+    if banners is None:
+        banners = Banner.objects.all().order_by('-id')
+        cache.set('index_banners', banners, 600)
 
     context = {
-        'bike_buy_and_sell': bike_buy_and_sell,
-        'banners': banner,
-        'categories': categories,
-        'seller_bikes': seller_bikes,
+        'bike_buy_and_sell': bikes,
+        'banners': banners,
+        'categories': Category.objects.all(),
     }
-    return render(request, 'index.html', context=context)
+    return render(request, 'index.html', context)
 
 
 def user_login(request):
     if request.user.is_authenticated:
-        return redirect('profile')  # Redirect logged-in users
+        return redirect('bike_buy_and_sell:bike_index')  # Updated redirect
 
     form = LoginForm()
     context = {'form': form}
@@ -73,9 +90,14 @@ def user_login(request):
 
 
 class SignUpView(CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy("login")
+    form_class = CustomUserCreationForm
+    success_url = reverse_lazy("bike_buy_and_sell:login")  # Updated URL
     template_name = "registration.html"
+
+    def form_valid(self, form):
+        user = form.save()  # Save the user and activate immediately
+        messages.success(self.request, "Registration successful! You can now log in.")
+        return redirect(self.success_url)
 
 
 @login_required(login_url='/login/')
@@ -86,7 +108,7 @@ def change_password(request):
             user = form.save()
             update_session_auth_hash(request, user)  # Important to maintain user's session
             messages.success(request, 'Your password was successfully updated!')
-            return redirect('profile')
+            return redirect('bike_buy_and_sell:profile')
         else:
             messages.error(request, 'Please correct the error below.')
     else:
@@ -110,13 +132,6 @@ def update_profile(request):
     user = request.user
     profile = getattr(user, 'profile', None)  # Get the profile if it exists
 
-    # Initialize the form with the user's current data
-    form = ProfileUpdateForm(initial={
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'email': user.email,
-    })
-
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, request.FILES)
         if form.is_valid():
@@ -135,6 +150,12 @@ def update_profile(request):
 
             messages.success(request, "Profile updated successfully!")
             return redirect('profile')
+    else:
+        form = ProfileUpdateForm(initial={
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+        })
 
     context = {
         'form': form,
@@ -153,22 +174,34 @@ def booking_list(request):
 
 
 def buy_list(request):
-    bike_buy_and_sell = BikeBuyAndSell.objects.filter(status='Approved').order_by('-id')
+    # Add caching
+    cache_key = f'buy_list_{request.GET.get("category", "")}_{request.GET.get("min_price", "")}_{request.GET.get("max_price", "")}'
+    queryset = cache.get(cache_key)
     
-    # Filtering logic
-    category_id = request.GET.get('category')
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
+    if queryset is None:
+        queryset = BikeBuyAndSell.objects.select_related('category', 'user').filter(status='Approved').order_by('-id')
+        
+        # Filtering logic
+        category_id = request.GET.get('category')
+        min_price = request.GET.get('min_price')
+        max_price = request.GET.get('max_price')
+        
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+        if min_price:
+            queryset = queryset.filter(price__gte=min_price)
+        if max_price:
+            queryset = queryset.filter(price__lte=max_price)
+            
+        cache.set(cache_key, queryset, 300)  # Cache for 5 minutes
 
-    if category_id:
-        bike_buy_and_sell = bike_buy_and_sell.filter(category_id=category_id)
-    if min_price:
-        bike_buy_and_sell = bike_buy_and_sell.filter(price__gte=min_price)
-    if max_price:
-        bike_buy_and_sell = bike_buy_and_sell.filter(price__lte=max_price)
+    # Add pagination
+    paginator = Paginator(queryset, 12)  # Show 12 bikes per page
+    page = request.GET.get('page')
+    bikes = paginator.get_page(page)
 
     context = {
-        'bike_buy_and_sell': bike_buy_and_sell,
+        'bike_buy_and_sell': bikes,
         'categories': Category.objects.all(),  # Pass categories for the dropdown
     }
     return render(request, 'buy_list.html', context)
@@ -185,12 +218,11 @@ def sell_views(request):
             name = request.POST.get('name')
             price = request.POST.get('price')
             description = request.POST.get('description')
-            quantity = request.POST.get('quantity')
             category_id = request.POST.get('category')
             image_list = request.FILES.getlist('image')
 
             # Validate required fields
-            if not (name and price and description and quantity and category_id):
+            if not (name and price and description and category_id):
                 messages.error(request, "All fields are required.")
                 return render(request, 'sell.html', context)
 
@@ -205,7 +237,6 @@ def sell_views(request):
             bike_buy_and_sell_create = BikeBuyAndSell.objects.create(
                 name=name,
                 price=price,
-                quantity=quantity,
                 description=description,
                 category=category_obj,
                 user=request.user
@@ -225,7 +256,6 @@ def sell_views(request):
 
             messages.success(request, "Bike listing created successfully!")
             return redirect('sell_list')
-
         except Exception as e:
             messages.error(request, f"An error occurred: {str(e)}")
             return render(request, 'sell.html', context)
@@ -243,26 +273,24 @@ def sell_list(request):
             name = request.POST.get('name')
             price = request.POST.get('price')
             description = request.POST.get('description')
-            quantity = request.POST.get('quantity')
             category_id = request.POST.get('category')
             image_list = request.FILES.getlist('image')
 
             # Validate required fields
-            if not (name and price and description and quantity and category_id):
+            if not (name and price and description and category_id):
                 messages.error(request, "All fields are required.")
             else:
                 category_obj = Category.objects.get(pk=category_id)
                 bike = BikeBuyAndSell.objects.create(
                     name=name,
                     price=price,
-                    quantity=quantity,
                     description=description,
                     category=category_obj,
                     user=request.user
                 )
                 for image in image_list:
                     BikeBuyAndSellImage.objects.create(bike_buy_and_sell=bike, image=image)
-                messages.success(request, "Bike added successfully!")
+                messages.success(request, f"Bike added successfully! Status: {bike.status}")
                 return redirect('sell_list')
         except Exception as e:
             messages.error(request, f"An error occurred: {str(e)}")
@@ -270,7 +298,6 @@ def sell_list(request):
     # Search and filter functionality
     search_query = request.GET.get('search', '')
     selected_categories = request.GET.getlist('category', [])
-
     if search_query:
         bikes = bikes.filter(name__icontains=search_query)
     if selected_categories:
@@ -292,7 +319,7 @@ def add_to_cart_view(request, product_id):
     form = CartAddProductForm(request.POST)
     if form.is_valid():
         cd = form.cleaned_data
-        cart.add(product=product, quantity=cd['quantity'], update_quantity=cd['update'])
+        cart.add(product=product, quantity=1, update_quantity=cd.get('update', False))  # Default quantity to 1
     return redirect('cart_detail')
 
 
@@ -310,8 +337,7 @@ def cart_update(request, product_id):
         form = CartAddProductForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            print('cd = ', cd)
-            cart.update(product=product, quantity=cd['quantity'], update_quantity=cd['update'])
+            cart.update(product=product, quantity=1, update_quantity=cd.get('update', False))  # Default quantity to 1
         return redirect('cart_detail')
 
 
@@ -337,7 +363,6 @@ def order_create(request):
                 address=cd['address'],
                 total_price=cart.get_total_price()
             )
-
             for item in cart:
                 OrderItem.objects.create(
                     order=order,
@@ -356,15 +381,12 @@ def search_view(request):
     # whatever user write in search box we get in query
     query = request.GET['query']
     products = BikeBuyAndSell.objects.all().filter(name__icontains=query)
-
     # word variable will be shown in html when user click on search button
     word = "Searched Result : {}".format(query)
-
     context = {
         'bike_buy_and_sell': products,
         'word': word,
     }
-
     return render(request, 'index.html', context)
 
 
@@ -404,7 +426,6 @@ def chat_support(request):
                 message=message,
                 is_admin=request.user.is_staff
             )
-
     # Fetch all messages for the current user
     messages_list = ChatMessage.objects.filter(user=request.user).order_by('timestamp')
     return render(request, 'chat_support.html', {'messages': messages_list})
@@ -429,7 +450,6 @@ def user_chat_support(request):
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({'status': 'success'})
             return redirect('chat_support')
-            
     # Remove parent=None filter so that admin replies (child messages) are included
     messages_list = ChatMessage.objects.filter(user=request.user).order_by('timestamp')
     return render(request, 'chat_support.html', {'messages': messages_list})
@@ -442,7 +462,6 @@ def edit_bike(request, bike_id):
         bike.name = request.POST.get('name')
         bike.price = request.POST.get('price')
         bike.description = request.POST.get('description')
-        bike.quantity = request.POST.get('quantity')
         bike.category_id = request.POST.get('category')
         bike.save()
 
@@ -513,4 +532,28 @@ def admin_chat_support(request):
         'selected_user': selected_user,
         'messages': messages_list
     })
+
+
+def activate_account(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, "Your account has been activated successfully!")
+        return redirect('login')
+    else:
+        messages.error(request, "The activation link is invalid or has expired.")
+        return render(request, 'activation_invalid.html')
+
+
+@staff_member_required
+def admin_order_details(request, order_id):
+    order = get_object_or_404(Orders, id=order_id)
+    items = OrderItem.objects.filter(order=order)
+    return render(request, 'admin/order_details.html', {'order': order, 'items': items})
 

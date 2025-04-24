@@ -11,7 +11,7 @@
                     {% if cart|length > 0 %}
                         My Shopping Order:
 
-                        <a href="{% url 'cart_detail' %}" style="color: #ffffff">
+                        <a href="{% url 'bike_buy_and_sell:cart_detail' %}" style="color: #ffffff">
 
                             {{ totail_items }} item {{ totail_items|pluralize }}, Taka. {{ cart.get_total_price }}
                         </a>
@@ -27,7 +27,6 @@
                     <tr>
                         <th>Image</th>
                         <th>Product</th>
-                        <th>Quantity</th>
                         <th>Remove</th>
                         <th>Unit Price</th>
                         <th>Price</th>
@@ -51,17 +50,6 @@
                             <td>{{ product.name }}</td>
                             <td>
 
-                                <form action="{% url 'cart_update' product.id %}" method="post">
-                                    {% csrf_token %}
-
-                                    {{ item.update_quantity_form.quantity }}
-                                    {{ item.update_quantity_form.update }}
-                                    <input type="submit" value="Update" class="btn btn-info">
-
-                                </form>
-                            </td>
-                            <td>
-
                                 <a href="{% url 'cart_remove' product.id %}">Remove</a>
                             </td>
 
@@ -73,7 +61,7 @@
                 {% endfor %}
                 <tr style="background-color: #5AC8FA">
                     <td><b>Total</b></td>
-                    <td colspan="4"></td>
+                    <td colspan="3"></td>
                     <td colspan="num"><b>Taka. {{ cart.get_total_price }}</b></td>
 
                 </tr>
@@ -81,7 +69,7 @@
          </table>
 
      <p class="text-right">
-        <a href="{% url 'index' %}" class="btn btn-default">Continue Shopping</a>
+        <a href="{% url 'bike_buy_and_sell:bike_index' %}" class="btn btn-default">Continue Shopping</a>
           <a href="{% url 'order_create' %}" class="btn btn-primary">Checkout</a>
      </p>
      </div>

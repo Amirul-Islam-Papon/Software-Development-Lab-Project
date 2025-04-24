@@ -131,16 +131,16 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-# for contact us give your gmail id and password
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'from@gmail.com'  # this email will be used to send emails
-EMAIL_HOST_PASSWORD = 'xyz'  # host email password required
-EMAIL_RECEIVING_USER = ['to@gmail.com']  # email on which you will receive messages sent from website
+# Removed email settings as email confirmation is no longer required
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_USE_TLS = True
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'iam.papon3@gmail.com'
+# EMAIL_HOST_PASSWORD = 'Hexasen.1'
+# EMAIL_RECEIVING_USER = ['iam.papon2@gmail.com']
 
-LOGIN_REDIRECT_URL = 'profile'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = 'bike_buy_and_sell:profile'
+LOGOUT_REDIRECT_URL = 'bike_buy_and_sell:login'
 
 CART_SESSION_ID = 'cart'

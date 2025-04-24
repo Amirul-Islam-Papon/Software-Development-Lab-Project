@@ -36,7 +36,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>                        
       </button>
-      <a class="navbar-brand" href="{% url 'index' %}">Bike Source</a>
+      <a class="navbar-brand" href="{% url 'bike_buy_and_sell:bike_index' %}">Bike Source</a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
@@ -63,7 +63,7 @@
             <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
         {% endif %}
           <li>
-              <a href="{% url 'cart_detail' %}">
+              <a href="{% url 'bike_buy_and_sell:cart_detail' %}">
                   Cart
                   <span class="item-number ">
                         {% with totail_items=cart|length %}

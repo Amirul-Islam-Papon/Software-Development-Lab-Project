@@ -7,10 +7,7 @@
         <h3 class="text-center mb-4 text-primary">Sign Up</h3>
         <form method="post">
             {% csrf_token %}
-            {% for hidden in form.hidden_fields %}
-                {{ hidden }}
-            {% endfor %}
-            {% for field in form.visible_fields %}
+            {% for field in form %}
                 <div class="mb-3">
                     <label for="{{ field.id_for_label }}" class="form-label text-secondary">{{ field.label }}</label>
                     {{ field|add_class:'form-control border-primary' }}
@@ -21,6 +18,9 @@
             {% endfor %}
             <button type="submit" class="btn btn-primary w-100">Register</button>
         </form>
+        <div class="text-center mt-3">
+            <a href="{% url 'bike_buy_and_sell:login' %}" class="text-primary">Already have an account? Log In</a>
+        </div>
     </div>
 </div>
 {% endblock %}
