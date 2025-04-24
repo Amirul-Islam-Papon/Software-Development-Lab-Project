@@ -7,13 +7,13 @@
         <div class="row" style="margin-top: 6%">
         <h2>Your Shopping Cart
             <span class="badge pull-right">
-                {% with totail_items=cart|length %}
-                    {% if cart|length > 0 %}
+                {% with total_items=cart|length %}
+                    {% if total_items > 0 %}
                         My Shopping Order:
 
                         <a href="{% url 'bike_buy_and_sell:cart_detail' %}" style="color: #ffffff">
 
-                            {{ totail_items }} item {{ totail_items|pluralize }}, Taka. {{ cart.get_total_price }}
+                            {{ total_items }} item {{ total_items|pluralize }}, Taka. {{ cart.get_total_price }}
                         </a>
                         {% else %}
                         Your cart is empty.

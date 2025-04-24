@@ -183,8 +183,8 @@ p {
                     <li class="col-md-4">
                       <figure class="itemside mb-3">
                           <div class="aside">
-                             {% if b.get_first_image %}
-                                <img class="project__thumbnail" src="{{b.get_first_image.image.url}}" alt="project thumbnail" style="height: 40px" />
+                             {% if product.get_first_image %}
+                                <img class="project__thumbnail" src="{{product.get_first_image.image.url}}" alt="project thumbnail" style="height: 40px" />
                              {% else %}
                              <img class="project__thumbnail"
                                   src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png"
