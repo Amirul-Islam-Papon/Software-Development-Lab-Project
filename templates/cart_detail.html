@@ -50,7 +50,7 @@
                             <td>{{ product.name }}</td>
                             <td>
 
-                                <a href="{% url 'cart_remove' product.id %}">Remove</a>
+                                <a href="{% url 'bike_buy_and_sell:cart_remove' product.id %}">Remove</a>
                             </td>
 
                             <td>Taka. {{ item.price }}</td>
@@ -70,7 +70,7 @@
 
      <p class="text-right">
         <a href="{% url 'bike_buy_and_sell:bike_index' %}" class="btn btn-default">Continue Shopping</a>
-          <a href="{% url 'order_create' %}" class="btn btn-primary">Checkout</a>
+        <a href="{% url 'bike_buy_and_sell:order_create' %}" class="btn btn-primary">Checkout</a>
      </p>
      </div>
     </div>

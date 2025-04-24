@@ -252,9 +252,9 @@
   </span>
 </a>
 
-{% if request.resolver_match.url_name == 'index' %}
+{% if request.resolver_match.url_name == 'bike_index' %}
 <footer>
-  <p>&copy; 2025 Bike Source. All rights reserved. | <a href="{% url 'contact' %}">Contact Us</a></p>
+  <p>&copy; 2025 Bike Source. All rights reserved. | <a href="{% url 'bike_buy_and_sell:contact' %}">Contact Us</a></p>
 </footer>
 {% endif %}
 

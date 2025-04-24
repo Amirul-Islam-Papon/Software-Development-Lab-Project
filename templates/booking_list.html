@@ -29,7 +29,7 @@
                   <td>{{ book.total_price }}</td>
                   <td>{{ book.status }}</td>
                     <td>
-                        <a href="{% url 'order_details' book.id %}">Details</a>
+                        <a href="{% url 'bike_buy_and_sell:order_details' book.id %}">Details</a>
                     </td>
                 </tr>
            {% endfor %}

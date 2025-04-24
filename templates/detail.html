@@ -46,7 +46,7 @@
                         <p><strong>Username:</strong> {{ seller.username }}</p>
                     </div>
                     <hr>
-                    <form action="{% url 'cart_add' product.id %}" method="post">
+                    <form action="{% url 'bike_buy_and_sell:cart_add' product.id %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
                     </form>

@@ -32,7 +32,7 @@
                 {% for image in bike.images.all %}
                     <div class="me-2 mb-2">
                         <img src="{{ image.image.url }}" alt="Bike Image" class="img-thumbnail" style="width: 100px; height: 100px;">
-                        <a href="{% url 'delete_bike_image' image.id %}" class="btn btn-danger btn-sm mt-1">Delete</a>
+                        <a href="{% url 'bike_buy_and_sell:delete_bike_image' image.id %}" class="btn btn-danger btn-sm mt-1">Delete</a>
                     </div>
                 {% endfor %}
             </div>

@@ -1,11 +1,8 @@
-from datetime import timezone
-
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse  # Add this import at the top
-from django.http import HttpResponseForbidden  # Add this import
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -13,7 +10,6 @@ from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.conf import settings
-from django.http import HttpResponse
 from django.contrib.auth.models import User
 
 from .cart import Cart
@@ -70,7 +66,7 @@ def index(request):
 
 def user_login(request):
     if request.user.is_authenticated:
-        return redirect('bike_buy_and_sell:bike_index')  # Updated redirect
+        return redirect('bike_buy_and_sell:bike_index')  # changed redirect target
 
     form = LoginForm()
     context = {'form': form}
@@ -83,7 +79,7 @@ def user_login(request):
             if user:
                 login(request, user)
                 messages.success(request, 'Logged in successfully')
-                return redirect('index')
+                return redirect('bike_buy_and_sell:bike_index')  # changed redirect target
             else:
                 messages.error(request, 'Login failed. Please check your username and password.')
     return render(request, 'login.html', context)
@@ -130,7 +126,7 @@ def profile(request):
 @login_required(login_url='/login')
 def update_profile(request):
     user = request.user
-    profile = getattr(user, 'profile', None)  # Get the profile if it exists
+    profile = getattr(user, 'profile', None)
 
     if request.method == 'POST':
         form = ProfileUpdateForm(request.POST, request.FILES)
@@ -149,7 +145,7 @@ def update_profile(request):
                 Profile.objects.create(user=user, profile_picture=form.cleaned_data.get('profile_picture'))
 
             messages.success(request, "Profile updated successfully!")
-            return redirect('profile')
+            return redirect('bike_buy_and_sell:profile')  # updated redirect with namespace
     else:
         form = ProfileUpdateForm(initial={
             'first_name': user.first_name,
@@ -320,7 +316,7 @@ def add_to_cart_view(request, product_id):
     if form.is_valid():
         cd = form.cleaned_data
         cart.add(product=product, quantity=1, update_quantity=cd.get('update', False))  # Default quantity to 1
-    return redirect('cart_detail')
+    return redirect('bike_buy_and_sell:cart_detail')
 
 
 def cart_detail(request):
@@ -338,14 +334,14 @@ def cart_update(request, product_id):
         if form.is_valid():
             cd = form.cleaned_data
             cart.update(product=product, quantity=1, update_quantity=cd.get('update', False))  # Default quantity to 1
-        return redirect('cart_detail')
+        return redirect('bike_buy_and_sell:cart_detail')
 
 
 def cart_remove(request, product_id):
     cart = Cart(request)
     product = get_object_or_404(BikeBuyAndSell, id=product_id)
     cart.remove(product)
-    return redirect('cart_detail')
+    return redirect('bike_buy_and_sell:cart_detail')
 
 
 @login_required(login_url='/login')
@@ -391,9 +387,9 @@ def search_view(request):
 
 
 def order_details(request, order_id):
-    orders = Orders.objects.get(user=request.user, id=order_id)
+    order = get_object_or_404(Orders, user=request.user, id=order_id)  # Use get_object_or_404 for safety
     products = OrderItem.objects.filter(order__id=order_id)
-    return render(request, 'order_details.html', {'order': orders, "products": products})
+    return render(request, 'order_details.html', {'order': order, "products": products})
 
 
 def product_detail(request, id):
@@ -434,7 +430,7 @@ def chat_support(request):
 def chat_support_redirect(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    return redirect('chat_support')
+    return redirect('bike_buy_and_sell:chat_support')  # Use namespaced URL
 
 
 @login_required
@@ -449,7 +445,7 @@ def user_chat_support(request):
             )
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({'status': 'success'})
-            return redirect('chat_support')
+            return redirect('bike_buy_and_sell:chat_support')  # updated redirect with namespace
     # Remove parent=None filter so that admin replies (child messages) are included
     messages_list = ChatMessage.objects.filter(user=request.user).order_by('timestamp')
     return render(request, 'chat_support.html', {'messages': messages_list})
@@ -471,7 +467,7 @@ def edit_bike(request, bike_id):
             BikeBuyAndSellImage.objects.create(bike_buy_and_sell=bike, image=image)
 
         messages.success(request, "Bike listing updated successfully!")
-        return redirect('sell_list')
+        return redirect('bike_buy_and_sell:sell_list')  # updated redirect with namespace
     categories = Category.objects.all()
     return render(request, 'edit_bike.html', {'bike': bike, 'categories': categories})
 
@@ -481,7 +477,7 @@ def delete_bike(request, bike_id):
     bike = get_object_or_404(BikeBuyAndSell, id=bike_id, user=request.user)
     bike.delete()
     messages.success(request, "Bike listing deleted successfully!")
-    return redirect('index')
+    return redirect('bike_buy_and_sell:bike_index')  # updated redirect with namespace
 
 
 @login_required(login_url='/login/')
@@ -491,13 +487,13 @@ def delete_bike_image(request, image_id):
         return HttpResponseForbidden("You are not allowed to delete this image.")
     image.delete()
     messages.success(request, "Image deleted successfully!")
-    return redirect('edit_bike', bike_id=image.bike_buy_and_sell.id)
+    return redirect('bike_buy_and_sell:edit_bike', bike_id=image.bike_buy_and_sell.id)  # updated redirect with namespace
 
 
 @login_required
 def admin_chat_support(request):
     if not request.user.is_staff:
-        return redirect('index')  # Restrict access to admins only
+        return redirect('bike_buy_and_sell:bike_index')  # Restrict access to admins only
 
     if request.method == 'POST':
         message = request.POST.get('message')
@@ -527,7 +523,7 @@ def admin_chat_support(request):
     selected_user = User.objects.get(id=selected_user_id) if selected_user_id else None
     # Order messages to group thread conversations
     messages_list = ChatMessage.objects.filter(user=selected_user).order_by('timestamp') if selected_user else []
-    return render(request, 'admin_chat_support.html', {
+    return render(request, 'bike_buy_and_sell:admin_chat_support.html', {
         'users': users_with_messages,
         'selected_user': selected_user,
         'messages': messages_list
@@ -545,7 +541,7 @@ def activate_account(request, uidb64, token):
         user.is_active = True
         user.save()
         messages.success(request, "Your account has been activated successfully!")
-        return redirect('login')
+        return redirect('bike_buy_and_sell:bike_indexlogin')
     else:
         messages.error(request, "The activation link is invalid or has expired.")
         return render(request, 'activation_invalid.html')

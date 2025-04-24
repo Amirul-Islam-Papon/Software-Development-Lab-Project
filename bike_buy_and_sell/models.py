@@ -32,8 +32,7 @@ class BikeBuyAndSell(models.Model):
 
     def get_first_image(self):
         obj = BikeBuyAndSellImage.objects.filter(bike_buy_and_sell=self.id)
-        if (obj):
-            print("|", obj.first())
+        if obj:
             return obj.first()
         return obj
 

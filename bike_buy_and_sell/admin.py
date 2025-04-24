@@ -37,7 +37,8 @@ class BikeBuyAndSellImageAdmin(admin.ModelAdmin):
 
 
 class OrdersAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'email', 'address', 'mobile', 'total_price', 'order_date', 'status', 'created_at', 'view_order_details')
+    list_display = ('id', 'user', 'email', 'address', 'mobile', 'total_price', 'order_date', 'status', 'created_at')  # removed view_order_details
+    list_editable = ('status',)  # added inline edit option for status
     search_fields = ('id', 'user__username', 'email', 'address', 'mobile', 'total_price', 'order_date', 'status', 'created_at')
     list_filter = ['status', 'order_date']
     actions = ['update_status']
@@ -48,10 +49,6 @@ class OrdersAdmin(admin.ModelAdmin):
             order.save()
         self.message_user(request, "Selected orders have been updated to 'Order Confirmed'.")
     update_status.short_description = "Update status to 'Order Confirmed'"
-
-    def view_order_details(self, obj):
-        return format_html('<a href="{}">View Details</a>', reverse('bike_buy_and_sell:admin_order_details', args=[obj.pk]))
-    view_order_details.short_description = "Order Details"
 
 
 class OrderItemAdmin(admin.ModelAdmin):

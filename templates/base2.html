@@ -41,7 +41,7 @@
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav">
         <!-- Removed Home button -->
-        <li><a href="{% url 'buy_list' %}">Buy</a></li>
+        <li><a href="{% url 'bike_buy_and_sell:buy_list' %}">Buy</a></li>
 <!--        <li><a href="{% url 'about' %}">About Us</a></li>-->
 <!--        <li><a href="{% url 'contact' %}">Contact Us</a></li>-->
       </ul>
@@ -51,16 +51,16 @@
 
         {% if request.user.is_authenticated %}
 
-            <li><a href="{% url 'sell' %}">Bike Sell</a></li>
-            <li><a href="{% url 'sell_list' %}">Bike Sell List</a></li>
-            <li><a href="{% url 'profile' %}">Profile</a></li>
-            <li><a href="{% url 'booking_list' %}">Booking List</a></li>
-            <li><a href="{% url 'change_password' %}">Password Change</a></li>
-            <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+            <li><a href="{% url 'bike_buy_and_sell:sell' %}">Bike Sell</a></li>
+            <li><a href="{% url 'bike_buy_and_sell:sell_list' %}">Bike Sell List</a></li>
+            <li><a href="{% url 'bike_buy_and_sell:profile' %}">Profile</a></li>
+            <li><a href="{% url 'bike_buy_and_sell:booking_list' %}">Booking List</a></li>
+            <li><a href="{% url 'bike_buy_and_sell:change_password' %}">Password Change</a></li>
+            <li><a href="{% url 'bike_buy_and_sell:logout' %}"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
         {% else %}
             <li><a href="/admin">Admin</a></li>
-            <li><a href="{% url 'registration' %}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-            <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            <li><a href="{% url 'bike_buy_and_sell:registration' %}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+            <li><a href="{% url 'bike_buy_and_sell:login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
         {% endif %}
           <li>
               <a href="{% url 'bike_buy_and_sell:cart_detail' %}">
