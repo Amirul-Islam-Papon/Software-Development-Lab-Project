@@ -34,18 +34,25 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h3 class="text-primary">{{ product.name }}</h3>
-                    <h6 class="text-muted">{{ product.category.name }}</h6>
-                    <p>{{ product.description|safe|linebreaksbr }}</p>
-                    <p><strong>Price:</strong> BDT: {{ product.price }}</p>
-                    <hr>
-                    <h5 class="text-secondary">Seller Information</h5>
-                    <div class="border p-3 rounded bg-light">
-                        <p><strong>Name:</strong> {{ seller.first_name }} {{ seller.last_name }}</p>
-                        <p><strong>Email:</strong> <a href="mailto:{{ seller.email }}" class="text-decoration-none">{{ seller.email }}</a></p>
-                        <p><strong>Username:</strong> {{ seller.username }}</p>
+                    <!-- Product Information -->
+                    <div class="mb-4">
+                        <h3 class="text-primary">{{ product.name }}</h3>
+                        <h6 class="text-muted">{{ product.category.name }}</h6>
+                        <p class="mb-2">{{ product.description|safe|linebreaksbr }}</p>
+                        <p><strong>Price:</strong> BDT: {{ product.price }}</p>
                     </div>
-                    <hr>
+                    <!-- Seller Information -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Seller Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Name:</strong> {{ seller.first_name }} {{ seller.last_name }}</p>
+                            <p class="mb-1"><strong>Email:</strong> <a href="mailto:{{ seller.email }}" class="text-decoration-none">{{ seller.email }}</a></p>
+                            <p class="mb-0"><strong>Username:</strong> {{ seller.username }}</p>
+                        </div>
+                    </div>
+                    <!-- Add to Cart Button -->
                     <form action="{% url 'bike_buy_and_sell:cart_add' product.id %}" method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
