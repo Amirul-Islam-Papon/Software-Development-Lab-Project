@@ -344,6 +344,11 @@
       const response = await fetch("{% url 'bike_buy_and_sell:chat_support_popup' %}");
       if (response.ok) {
         document.getElementById('chatModalContent').innerHTML = await response.text();
+        // Bind the chat form submit event after the modal content loads
+        bindChatFormPopup();
+        // Auto-scroll chat box to bottom after loading the modal content
+        const chatBox = document.querySelector('#chatModalContent .chat-box');
+        if(chatBox) { chatBox.scrollTop = chatBox.scrollHeight; }
       } else {
         document.getElementById('chatModalContent').innerHTML = "<p>Error loading chat. Please try again.</p>";
       }
@@ -352,6 +357,39 @@
       document.getElementById('chatModalContent').innerHTML = "<p>Error loading chat. Please try again.</p>";
     }
   });
+
+  // New function to bind the chat popup form submission
+  function bindChatFormPopup() {
+    const chatForm = document.getElementById('chatFormPopup');
+    if (chatForm) {
+      chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(chatForm);
+        const csrfToken = document.querySelector('#chatFormPopup [name=csrfmiddlewaretoken]').value;
+        try {
+          const response = await fetch("{% url 'bike_buy_and_sell:chat_support' %}", {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': csrfToken }
+          });
+          if (response.ok) {
+            // Reload the popup content after sending the message
+            const res = await fetch("{% url 'bike_buy_and_sell:chat_support_popup' %}");
+            if(res.ok) {
+              document.getElementById('chatModalContent').innerHTML = await res.text();
+              // Rebind event after reloading content
+              bindChatFormPopup();
+              // Ensure the chat box scrolls to the bottom every time it reloads
+              const chatBox = document.querySelector('#chatModalContent .chat-box');
+              if(chatBox) { chatBox.scrollTop = chatBox.scrollHeight; }
+            }
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      });
+    }
+  }
 </script>
 
 </body>
